@@ -1,0 +1,71 @@
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  DOCKERHUB_URL: docker.io/rkeri
+
+.kaniko-config:
+  before_script:
+    - 'echo "{\"auths\": {\"${DOCKERHUB_URL}\": {\"auth\": \"${DOCKER_AUTH}\"}}}" > /kaniko/.docker/config.json'
+
+go-test:
+  stage: test
+  image: golang:1.22-alpine
+  script:
+    - cd app
+    - go test ./... -v
+
+hadolint:
+  stage: test
+  image: hadolint/hadolint:latest-alpine
+  script:
+    - hadolint Dockerfile
+
+helm-lint:
+  stage: test
+  image: alpine/helm:latest
+  script:
+    - helm lint ./helm
+    - helm template ./helm
+
+build:tag:
+  stage: build
+  extends: .kaniko-config
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${DOCKERHUB_URL}/goapp-demo:$CI_COMMIT_TAG"
+      --build-arg VERSION=$CI_COMMIT_TAG
+  rules:
+    - if: $CI_COMMIT_TAG
+
+build:
+  stage: build
+  extends: .kaniko-config
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  script:
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}"
+      --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
+      --destination "${DOCKERHUB_URL}/goapp-demo:latest"
+      --build-arg VERSION=$CI_COMMIT_SHORT_SHA
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+# todo: not properly working, need to add tfstate backend
+deploy:
+  stage: deploy
+  image: ghcr.io/opentofu/opentofu:1.8
+  script:
+    - cd terraform
+    - tofu init
+    - tofu apply -auto-approve
+  when: manual
