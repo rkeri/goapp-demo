@@ -48,6 +48,7 @@ DOCKER_AUTH variable is required to configure docker login for ci to work proper
   predefined key/value pairs
 - Logging
 - Vulnerability scan - trivy?
+- Better ci rules - required lint pass on merge-request
 - Deploy stage in gitlab-ci (tfstate), or a better deploy solution altogether (gitops)
 - Release stage in gitlab-ci, manage tags, bumps automatically
 - Better versioning overall
