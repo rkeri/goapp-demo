@@ -43,15 +43,20 @@ DOCKER_AUTH variable is required to configure docker login for ci to work proper
 
 ## TODO / Improvements
 
-- Make more stuff configurable via envvar, eg. http portlistener
+### Top
+
+- Vulnerability scan - trivy?
+- Deploy stage in gitlab-ci (tfstate), or a better deploy solution altogether (gitops)
 - Config param management: add db support, and/or persistence with an optional helm hook to fill the json with
   predefined key/value pairs
-- Logging
-- Vulnerability scan - trivy?
 - Better ci rules - required lint pass on merge-request
-- Deploy stage in gitlab-ci (tfstate), or a better deploy solution altogether (gitops)
+- Observability - metrics endpoint
+
+### Additional
+
+- Make more stuff configurable via envvar, eg. http portlistener
+- Better logging
 - Release stage in gitlab-ci, manage tags, bumps automatically
 - Better versioning overall
-- Observability - metrics endpoint
 - Helm chart tidy
 - Liveness/readyness probe separation, depends if bigger complexity is added later
