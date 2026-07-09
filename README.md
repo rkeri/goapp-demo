@@ -4,7 +4,7 @@ Small Go service + the manifests/infra to run it on Kubernetes.
 
 ## Contents
 
-- `app/` – Go app, exposes `/health`, `/version`, `/env`, and `/config`
+- `app/` – Go app, exposes `/health`, `/version`, `/env`, and CRUD on `/config`
 - `Dockerfile` – multi-stage build, `golang:alpine` → `alpine` runtime
 - `helm/` – chart to deploy the app (`goapp-demo`)
 - `terraform/` – creates the namespace and installs the Helm release
